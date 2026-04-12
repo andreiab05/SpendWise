@@ -3,6 +3,6 @@ module org.example.spendwise {
     requires javafx.fxml;
 
 
-    opens org.example.spendwise to javafx.fxml;
-    exports org.example.spendwise;
+    opens com.spendwise to javafx.fxml;
+    exports com.spendwise;
 }
