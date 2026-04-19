@@ -1,16 +1,16 @@
 package com.spendwise.domain;
 
 public class Category implements Entity {
-    private final int id;
+    private Integer id;
     private String name;
 
-    public Category(int id, String name) {
+    public Category(Integer id, String name) {
         this.id = id;
         this.name = name;
     }
 
     @Override
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

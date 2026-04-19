@@ -1,27 +1,32 @@
 package com.spendwise.domain;
 
 public class Year implements Entity {
-    private final int id;
-    private int year;
+    private Integer id;
+    private int yearValue;
     private boolean readOnly;
 
-    public Year(int id, int year, boolean readOnly) {
+    public Year(Integer id, int year, boolean readOnly) {
         this.id = id;
-        this.year = year;
+        this.yearValue = year;
+        this.readOnly = readOnly;
+    }
+
+    public Year(int year, boolean readOnly) {
+        this.yearValue = year;
         this.readOnly = readOnly;
     }
 
     @Override
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
     public int getYear() {
-        return year;
+        return yearValue;
     }
 
     public void setYear(int year) {
-        this.year = year;
+        this.yearValue = year;
     }
 
     public boolean isReadOnly() {

@@ -1,13 +1,13 @@
 package com.spendwise.domain;
 
 public class MonthlyCategoryBudget implements Entity {
-    private final int id;
+    private Integer id;
     private Category category;
     private Month month;
     private int moneySpent;
     private int monthlyBudget;
 
-    public MonthlyCategoryBudget(int id, Category category, Month month, int moneySpent, int monthlyBudget) {
+    public MonthlyCategoryBudget(Integer id, Category category, Month month, int moneySpent, int monthlyBudget) {
         this.id = id;
         this.category = category;
         this.month = month;
@@ -15,8 +15,15 @@ public class MonthlyCategoryBudget implements Entity {
         this.monthlyBudget = monthlyBudget;
     }
 
+    public MonthlyCategoryBudget(Category category, Month month, int moneySpent, int monthlyBudget) {
+        this.category = category;
+        this.month = month;
+        this.moneySpent = moneySpent;
+        this.monthlyBudget = monthlyBudget;
+    }
+
     @Override
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 

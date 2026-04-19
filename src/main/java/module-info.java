@@ -3,6 +3,7 @@ module org.example.spendwise {
     requires javafx.fxml;
     requires java.sql;
     requires org.xerial.sqlitejdbc;
+    requires org.slf4j;
 
 
     opens com.spendwise to javafx.fxml;

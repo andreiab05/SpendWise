@@ -1,18 +1,23 @@
 package com.spendwise.domain;
 
 public class Month implements Entity {
-    private final int id;
+    private Integer id;
     private int month;
     private Year year;
 
-    public Month(int id, int month, Year year) {
+    public Month(Integer id, int month, Year year) {
         this.id = id;
         this.month = month;
         this.year = year;
     }
 
+    public Month(int month, Year year) {
+        this.month = month;
+        this.year = year;
+    }
+
     @Override
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
