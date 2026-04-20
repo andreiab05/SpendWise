@@ -51,6 +51,12 @@ public class SQLiteYearRepository implements InterfaceRepository<Year>, AutoClos
             statement.setInt(1, year.getYear());
             statement.setInt(2, year.isReadOnly() ? 1 : 0);
             statement.executeUpdate();
+            try (ResultSet rs = statement.getGeneratedKeys()) {
+                if (rs.next()) {
+                    year.setId(rs.getInt(1));
+                }
+            }
+            
         } catch(SQLException e){
             throw new RuntimeException("Eroare la salvarea anului: " + year, e);
         }

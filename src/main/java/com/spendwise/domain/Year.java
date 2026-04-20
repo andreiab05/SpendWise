@@ -21,6 +21,9 @@ public class Year implements Entity {
         return id;
     }
 
+    public void setId(int anInt) {
+    }
+
     public int getYear() {
         return yearValue;
     }
@@ -35,5 +38,10 @@ public class Year implements Entity {
 
     public void setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
+    }
+
+    @Override
+    public String toString() {
+        return String.valueOf(yearValue);
     }
 }
