@@ -1,9 +1,8 @@
 package com.spendwise;
 
-import com.spendwise.domain.*;
 import com.spendwise.repository.InterfaceRepository;
-import com.spendwise.repository.SQLiteYearRepository;
-import com.spendwise.service.YearService;
+import com.spendwise.repository.SQLiteMonthlyBudgetEntryRepository;
+import com.spendwise.service.MonthlyBudgetEntryService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -20,8 +19,8 @@ public class MainApplication extends Application {
         Parent root = fxmlLoader.load();
         MainController mainController = fxmlLoader.getController();
 
-        InterfaceRepository<Year> repoYear = new SQLiteYearRepository();
-        YearService servYear = new YearService(repoYear);
+        InterfaceRepository<Year> repoYear = new SQLiteMonthlyBudgetEntryRepository();
+        MonthlyBudgetEntryService servYear = new MonthlyBudgetEntryService(repoYear);
 
         if (servYear.getAll().isEmpty()) {
             servYear.create(2024, true);
