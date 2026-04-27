@@ -72,4 +72,16 @@ public class MonthlyBudgetEntry implements Entity {
     public void setMonthlyBudget(Float monthlyBudget) {
         this.monthlyBudget = monthlyBudget;
     }
+
+    @Override
+    public String toString() {
+        return "MonthlyBudgetEntry{" +
+                "id=" + id +
+                ", year=" + year +
+                ", month=" + month +
+                ", categoryName='" + categoryName + '\'' +
+                ", moneySpent=" + moneySpent +
+                ", monthlyBudget=" + monthlyBudget +
+                '}';
+    }
 }

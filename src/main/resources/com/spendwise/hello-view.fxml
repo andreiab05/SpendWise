@@ -11,7 +11,7 @@
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label fx:id="SelectTheYear"/>
-    <ComboBox fx:id="yearComboBox" prefWidth="200.0" />
-    <Label fx:id="selectedYearLabel" text="No year has been selected" />
+    <Label fx:id="selectEntryLabel"/>
+    <ComboBox fx:id="entryComboBox" prefWidth="200.0" />
+    <Label fx:id="selectedEntryLabel" text="No entry has been selected" />
 </VBox>

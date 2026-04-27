@@ -1,25 +1,34 @@
 package com.spendwise;
 
+import com.spendwise.domain.MonthlyBudgetEntry;
 import com.spendwise.service.MonthlyBudgetEntryService;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableView;
 
 public class MainController {
-    @FXML private ComboBox<Year> yearComboBox;
-    @FXML private Label selectedYearLabel;
-    private MonthlyBudgetEntryService yearService;
+    @FXML TableView<MonthlyBudgetEntry> monthlyBudgetTableView;
+    private ObservableList<MonthlyBudgetEntry> entries;
+    @FXML private ComboBox<MonthlyBudgetEntry> entryComboBox;
+    @FXML private Label selectedEntryLabel;
+    private MonthlyBudgetEntryService monthlyBudgetEntryService;
 
-    public void init(MonthlyBudgetEntryService yearService) {
-        this.yearService = yearService;
+    public void init(MonthlyBudgetEntryService entriesService) {
+        this.monthlyBudgetEntryService = entriesService;
 
-        yearComboBox.getItems().setAll(yearService.getAll());
+        entryComboBox.getItems().setAll(entriesService.getAll());
 
-        yearComboBox.setOnAction(e -> {
-            Year selectedYear = yearComboBox.getValue();
-            if (selectedYear != null) {
-                selectedYearLabel.setText(
-                        "You have selected the year: " + selectedYear.getYear()
+        entries = FXCollections.observableArrayList(entriesService.getAll());
+        monthlyBudgetTableView.setItems(entries);
+
+        entryComboBox.setOnAction(e -> {
+            MonthlyBudgetEntry selectedEntry = entryComboBox.getValue();
+            if (selectedEntry != null) {
+                selectedEntryLabel.setText(
+                        "You have selected the entry: " + selectedEntry.toString()
                 );
             }
         });

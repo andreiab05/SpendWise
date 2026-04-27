@@ -1,5 +1,6 @@
 package com.spendwise;
 
+import com.spendwise.domain.MonthlyBudgetEntry;
 import com.spendwise.repository.InterfaceRepository;
 import com.spendwise.repository.SQLiteMonthlyBudgetEntryRepository;
 import com.spendwise.service.MonthlyBudgetEntryService;
@@ -19,16 +20,16 @@ public class MainApplication extends Application {
         Parent root = fxmlLoader.load();
         MainController mainController = fxmlLoader.getController();
 
-        InterfaceRepository<Year> repoYear = new SQLiteMonthlyBudgetEntryRepository();
-        MonthlyBudgetEntryService servYear = new MonthlyBudgetEntryService(repoYear);
+        InterfaceRepository<MonthlyBudgetEntry> repoEntries = new SQLiteMonthlyBudgetEntryRepository();
+        MonthlyBudgetEntryService servEntries = new MonthlyBudgetEntryService(repoEntries);
 
-        if (servYear.getAll().isEmpty()) {
-            servYear.create(2024, true);
-            servYear.create(2025, true);
-            servYear.create(2026, false);
+        if (servEntries.getAll().isEmpty()) {
+            servEntries.create(2024, 10, "Meow", 50f, 100f);
+            servEntries.create(2025, 4, "Meow", 25f, 100f);
+            servEntries.create(2026, 12, "Meow", 75f, 100f);
         }
 
-        mainController.init(servYear);
+        mainController.init(servEntries);
 
         Scene scene = new Scene(root, 800, 600);
         stage.setTitle("SpendWise!");
