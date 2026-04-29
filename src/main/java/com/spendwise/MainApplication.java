@@ -31,7 +31,7 @@ public class MainApplication extends Application {
 
         mainController.init(servEntries);
 
-        Scene scene = new Scene(root, 800, 600);
+        Scene scene = new Scene(root, 405, 600);
         stage.setTitle("SpendWise!");
         stage.setScene(scene);
         stage.show();

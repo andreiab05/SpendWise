@@ -35,4 +35,11 @@ public class MonthlyBudgetEntryService {
     public List<MonthlyBudgetEntry> getAll() {
         return repository.getAll();
     }
+
+    public List<MonthlyBudgetEntry> getEntriesForMonth(int year, int month){
+        return repository.getAll()
+                .stream()
+                .filter(entry -> entry.getYear() == year && entry.getMonth() == month)
+                .toList();
+    }
 }

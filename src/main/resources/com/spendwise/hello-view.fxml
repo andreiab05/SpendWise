@@ -5,13 +5,23 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
 <VBox alignment="CENTER" spacing="20.0" xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.spendwise.MainController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
     </padding>
 
-    <Label fx:id="selectEntryLabel"/>
-    <ComboBox fx:id="entryComboBox" prefWidth="200.0" />
+    <TableView fx:id="monthlyBudgetTableView">
+        <columns>
+            <TableColumn fx:id="categoryCol" text="Category" />
+            <TableColumn fx:id="spentCol" text="Spent Money" />
+            <TableColumn fx:id="budgetCol" text="Monthly Budget" />
+        </columns>
+    </TableView>
+
+    <ComboBox fx:id="yearComboBox" />
+    <ComboBox fx:id="monthComboBox" />
     <Label fx:id="selectedEntryLabel" text="No entry has been selected" />
 </VBox>
