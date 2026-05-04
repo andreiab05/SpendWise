@@ -37,6 +37,8 @@ public class MainApplication extends Application {
         stage.show();
     }
 
+    //TODO Add delete button. Figure out a way to add to the spent sum on a selected entry.
+
     public static void main(String[] args) {
         launch(args);
     }

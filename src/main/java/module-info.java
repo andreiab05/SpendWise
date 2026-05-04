@@ -4,8 +4,10 @@ module org.example.spendwise {
     requires java.sql;
     requires org.xerial.sqlitejdbc;
     requires org.slf4j;
+    requires javafx.base;
 
 
     opens com.spendwise to javafx.fxml;
+    opens com.spendwise.domain to javafx.base;
     exports com.spendwise;
 }
