@@ -33,7 +33,8 @@
         <ComboBox fx:id="monthComboBox" />
     </HBox>
 
-    <HBox><VBox>
+    <HBox>
+        <VBox>
             <Label text="Category"/>
             <TextField fx:id="textCategoryName"/>
         </VBox>
@@ -51,6 +52,15 @@
 
     <HBox>
         <Button text="Add new entry" onAction="#onAddClicked"/>
+        <Button text="Delete entry" onAction="#onDeleteClicked"/>
+    </HBox>
+
+    <HBox>
+        <VBox>
+            <Label text="Amount"/>
+            <TextField fx:id="textAddAmount"/>
+        </VBox>
+        <Button text="Add amount" onAction="#onAddMoneySpentClicked"/>
     </HBox>
 
 </VBox>

@@ -18,6 +18,7 @@ public class MainController {
     @FXML TableColumn<MonthlyBudgetEntry, String> categoryCol;
     @FXML TableColumn<MonthlyBudgetEntry, Float> spentCol;
     @FXML TableColumn<MonthlyBudgetEntry, Float> budgetCol;
+
     private ObservableList<MonthlyBudgetEntry> entries;
     @FXML private ComboBox<Integer> yearComboBox;
     @FXML private ComboBox<Integer> monthComboBox;
@@ -26,6 +27,7 @@ public class MainController {
     @FXML public TextField textCategoryName;
     @FXML public TextField textMoneySpent;
     @FXML public TextField textMonthlyBudget;
+    @FXML public TextField textAddAmount;
 
     public void init(MonthlyBudgetEntryService entriesService) {
         this.monthlyBudgetEntryService = entriesService;
@@ -90,6 +92,40 @@ public class MainController {
             textMoneySpent.clear();
             textMonthlyBudget.clear();
 
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        }
+    }
+
+    @FXML
+    public void onDeleteClicked(ActionEvent actionEvent) {
+        MonthlyBudgetEntry selected = monthlyBudgetTableView.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        try {
+            monthlyBudgetEntryService.delete(selected.getId());
+            refreshTable();
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        }
+    }
+
+    @FXML
+    public void onAddMoneySpentClicked(ActionEvent actionEvent) {
+        MonthlyBudgetEntry selected = monthlyBudgetTableView.getSelectionModel().getSelectedItem();
+
+        if (selected == null) {
+            new Alert(Alert.AlertType.WARNING, "Select an entry first.", ButtonType.OK).showAndWait();
+            return;
+        }
+
+        try {
+            float amount = Float.parseFloat(textAddAmount.getText());
+
+            monthlyBudgetEntryService.addToMoneySpent(selected.getId(),  amount);
+
+            refreshTable();
+            textAddAmount.clear();
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
         }

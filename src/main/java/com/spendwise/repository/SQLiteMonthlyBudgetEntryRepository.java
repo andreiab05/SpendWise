@@ -115,7 +115,7 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
 
     @Override
     public void delete(int id){
-        String sql = "DELETE FROM years WHERE id = ?;";
+        String sql = "DELETE FROM monthly_budget_entries WHERE id = ?;";
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);

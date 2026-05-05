@@ -42,4 +42,16 @@ public class MonthlyBudgetEntryService {
                 .filter(entry -> entry.getYear() == year && entry.getMonth() == month)
                 .toList();
     }
+
+    public void addToMoneySpent(int entryID, float amount){
+        MonthlyBudgetEntry entry = repository.read(entryID);
+
+        if(entry == null){
+            throw new IllegalArgumentException("Entry does not exist.");
+        }
+
+        entry.setMoneySpent(entry.getMoneySpent() + amount);
+
+        repository.update(entry);
+    }
 }

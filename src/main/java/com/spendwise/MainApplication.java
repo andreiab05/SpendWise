@@ -23,12 +23,6 @@ public class MainApplication extends Application {
         InterfaceRepository<MonthlyBudgetEntry> repoEntries = new SQLiteMonthlyBudgetEntryRepository();
         MonthlyBudgetEntryService servEntries = new MonthlyBudgetEntryService(repoEntries);
 
-        if (servEntries.getAll().isEmpty()) {
-            servEntries.create(2024, 10, "Meow", 50f, 100f);
-            servEntries.create(2025, 4, "Meow", 25f, 100f);
-            servEntries.create(2026, 12, "Meow", 75f, 100f);
-        }
-
         mainController.init(servEntries);
 
         Scene scene = new Scene(root, 405, 600);
@@ -37,7 +31,12 @@ public class MainApplication extends Application {
         stage.show();
     }
 
-    //TODO Add delete button. Figure out a way to add to the spent sum on a selected entry.
+    //TODO Drag and drop categories
+    //TODO Color of moneySpent green ? red depending if under/overflow
+    //TODO Tidy up buttons/text fields
+    //TODO Able to rename category or change budget
+    //TODO Able to add a category for all months
+    //TODO Make years before current one read only
 
     public static void main(String[] args) {
         launch(args);
