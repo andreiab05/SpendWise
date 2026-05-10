@@ -2,6 +2,7 @@ package com.spendwise.service;
 
 import com.spendwise.domain.MonthlyBudgetEntry;
 import com.spendwise.repository.InterfaceRepository;
+import java.time.Year;
 import java.util.List;
 
 public class MonthlyBudgetEntryService {
@@ -11,7 +12,24 @@ public class MonthlyBudgetEntryService {
         this.repository = repository;
     }
 
+    private void validateEditableYear(int year) {
+        int currentYear = Year.now().getValue();
+
+        if (year < currentYear) {
+            throw new IllegalArgumentException("Past years are read-only.");
+        }
+    }
+
+    private void validateMonth(int month) {
+        if (month < 1 || month > 12) {
+            throw new IllegalArgumentException("Month must be between 1 and 12.");
+        }
+    }
+
     public void create(int yearValue, int monthValue, String categoryName, Float moneySpent, Float monthlyBudget) {
+        validateEditableYear(yearValue);
+        validateMonth(monthValue);
+
         MonthlyBudgetEntry entry = new MonthlyBudgetEntry(yearValue, monthValue, categoryName, moneySpent, monthlyBudget);
         repository.create(entry);
     }
@@ -21,14 +39,33 @@ public class MonthlyBudgetEntryService {
     }
 
     public void update(int id, int yearValue, int monthValue, String categoryName, Float moneySpent, Float monthlyBudget) {
+        validateEditableYear(yearValue);
+        validateMonth(monthValue);
+
         if(repository.read(id) == null){
             throw new IllegalArgumentException("Entry does not exist.");
         }
-        MonthlyBudgetEntry entry = new MonthlyBudgetEntry(yearValue, monthValue, categoryName, moneySpent, monthlyBudget);
+        MonthlyBudgetEntry entry = new MonthlyBudgetEntry(
+                id,
+                yearValue,
+                monthValue,
+                categoryName,
+                moneySpent,
+                monthlyBudget
+        );
+
         repository.update(entry);
     }
 
     public void delete(int id){
+        MonthlyBudgetEntry entry = repository.read(id);
+
+        if (entry == null) {
+            throw new IllegalArgumentException("Entry does not exist.");
+        }
+
+        validateEditableYear(entry.getYear());
+
         repository.delete(id);
     }
 
@@ -36,22 +73,54 @@ public class MonthlyBudgetEntryService {
         return repository.getAll();
     }
 
-    public List<MonthlyBudgetEntry> getEntriesForMonth(int year, int month){
+    public List<MonthlyBudgetEntry> getEntriesForMonth(int yearValue, int monthValue){
+        validateMonth(monthValue);
+
         return repository.getAll()
                 .stream()
-                .filter(entry -> entry.getYear() == year && entry.getMonth() == month)
+                .filter(entry -> entry.getYear() == yearValue && entry.getMonth() == monthValue)
                 .toList();
     }
 
     public void addToMoneySpent(int entryID, float amount){
         MonthlyBudgetEntry entry = repository.read(entryID);
 
-        if(entry == null){
+        if (entry == null) {
             throw new IllegalArgumentException("Entry does not exist.");
+        }
+
+        validateEditableYear(entry.getYear());
+
+        if (amount <= 0) {
+            throw new IllegalArgumentException("Amount must be positive.");
         }
 
         entry.setMoneySpent(entry.getMoneySpent() + amount);
 
         repository.update(entry);
+    }
+
+    public void addCategoryToAllMonths(int yearValue, String categoryName, float monthlyBudget) {
+        validateEditableYear(yearValue);
+
+        if (categoryName == null || categoryName.isBlank()) {
+            throw new IllegalArgumentException("Category name cannot be empty.");
+        }
+
+        if (monthlyBudget < 0) {
+            throw new IllegalArgumentException("Monthly budget cannot be negative.");
+        }
+
+        for (int month = 1; month <= 12; month++) {
+            MonthlyBudgetEntry entry = new MonthlyBudgetEntry(
+                    yearValue,
+                    month,
+                    categoryName,
+                    0f,
+                    monthlyBudget
+            );
+
+            repository.create(entry);
+        }
     }
 }

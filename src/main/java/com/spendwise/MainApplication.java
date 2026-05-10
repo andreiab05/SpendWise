@@ -32,11 +32,8 @@ public class MainApplication extends Application {
     }
 
     //TODO Drag and drop categories
-    //TODO Color of moneySpent green ? red depending if under/overflow
     //TODO Tidy up buttons/text fields
     //TODO Able to rename category or change budget
-    //TODO Able to add a category for all months
-    //TODO Make years before current one read only
 
     public static void main(String[] args) {
         launch(args);

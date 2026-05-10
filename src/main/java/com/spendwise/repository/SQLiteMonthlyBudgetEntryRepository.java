@@ -51,7 +51,7 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
     public void create(MonthlyBudgetEntry entry) {
         String sql = "INSERT INTO monthly_budget_entries(year_value, month_value, category_name, money_spent, monthly_budget) VALUES (?, ?, ?, ?, ?)";
 
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        try (PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             statement.setInt(1, entry.getYear());
             statement.setInt(2, entry.getMonth());
             statement.setString(3, entry.getCategoryName());

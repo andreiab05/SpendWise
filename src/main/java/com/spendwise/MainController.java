@@ -37,6 +37,28 @@ public class MainController {
 
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
         spentCol.setCellValueFactory(new PropertyValueFactory<>("moneySpent"));
+        spentCol.setCellFactory(column -> new TableCell<MonthlyBudgetEntry, Float>() {
+            @Override
+            protected void updateItem(Float moneySpent, boolean empty) {
+                super.updateItem(moneySpent, empty);
+
+                if (empty || moneySpent == null) {
+                    setText(null);
+                    setStyle("");
+                    return;
+                }
+
+                setText(String.valueOf(moneySpent));
+
+                MonthlyBudgetEntry entry = getTableView().getItems().get(getIndex());
+
+                if (entry.getMoneySpent() > entry.getMonthlyBudget()) {
+                    setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
+                } else {
+                    setStyle("");
+                }
+            }
+        });
         budgetCol.setCellValueFactory(new PropertyValueFactory<>("monthlyBudget"));
 
         yearComboBox.getItems().setAll(2024, 2025, 2026);
@@ -90,6 +112,39 @@ public class MainController {
 
             textCategoryName.clear();
             textMoneySpent.clear();
+            textMonthlyBudget.clear();
+
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
+        }
+    }
+
+    @FXML
+    public void onAddToAllMonths(ActionEvent actionEvent) {
+        try {
+            Integer selectedYear = yearComboBox.getValue();
+
+            if (selectedYear == null) {
+                throw new IllegalArgumentException("Please select year.");
+            }
+
+            String categoryName = textCategoryName.getText();
+
+            if (categoryName == null || categoryName.isBlank()) {
+                throw new IllegalArgumentException("Category name cannot be empty.");
+            }
+
+            float monthlyBudget = Float.parseFloat(textMonthlyBudget.getText());
+
+            monthlyBudgetEntryService.addCategoryToAllMonths(
+                    selectedYear,
+                    categoryName,
+                    monthlyBudget
+            );
+
+            refreshTable();
+
+            textCategoryName.clear();
             textMonthlyBudget.clear();
 
         } catch (Exception e) {

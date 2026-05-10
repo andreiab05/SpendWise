@@ -53,6 +53,7 @@
     <HBox>
         <Button text="Add new entry" onAction="#onAddClicked"/>
         <Button text="Delete entry" onAction="#onDeleteClicked"/>
+        <Button text="Add to all months" onAction="#onAddToAllMonths"/>
     </HBox>
 
     <HBox>
