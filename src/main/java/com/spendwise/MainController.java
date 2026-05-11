@@ -9,10 +9,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-import java.time.Duration;
-
-import static java.lang.Integer.parseInt;
-
 public class MainController {
     @FXML TableView<MonthlyBudgetEntry> monthlyBudgetTableView;
     @FXML TableColumn<MonthlyBudgetEntry, String> categoryCol;
@@ -27,7 +23,6 @@ public class MainController {
     @FXML public TextField textCategoryName;
     @FXML public TextField textMoneySpent;
     @FXML public TextField textMonthlyBudget;
-    @FXML public TextField textAddAmount;
 
     public void init(MonthlyBudgetEntryService entriesService) {
         this.monthlyBudgetEntryService = entriesService;
@@ -50,7 +45,14 @@ public class MainController {
 
                 setText(String.valueOf(moneySpent));
 
-                MonthlyBudgetEntry entry = getTableView().getItems().get(getIndex());
+                int index = getIndex();
+
+                if (index < 0 || index >= getTableView().getItems().size()) {
+                    setStyle("");
+                    return;
+                }
+
+                MonthlyBudgetEntry entry = getTableView().getItems().get(index);
 
                 if (entry.getMoneySpent() > entry.getMonthlyBudget()) {
                     setStyle("-fx-text-fill: red; -fx-font-weight: bold;");
@@ -61,14 +63,19 @@ public class MainController {
         });
         budgetCol.setCellValueFactory(new PropertyValueFactory<>("monthlyBudget"));
 
-        yearComboBox.getItems().setAll(2024, 2025, 2026);
+        int currentYear = java.time.Year.now().getValue();
+        yearComboBox.getItems().setAll(
+                currentYear - 2,
+                currentYear - 1,
+                currentYear
+        );
         monthComboBox.getItems().setAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
         yearComboBox.setOnAction(e -> refreshTable());
         monthComboBox.setOnAction(e -> refreshTable());
 
-        yearComboBox.setValue(2026);
-        monthComboBox.setValue(1);
+        yearComboBox.setValue(java.time.Year.now().getValue());
+        monthComboBox.setValue(java.time.LocalDate.now().getMonthValue());
 
         refreshTable();
     }
@@ -96,9 +103,14 @@ public class MainController {
                 throw new IllegalArgumentException("Please select year and month.");
             }
 
-            String categoryName = textCategoryName.getText();
-            float moneySpent = parseInt(textMoneySpent.getText());
-            float monthlyBudget = parseInt(textMonthlyBudget.getText());
+            String categoryName = textCategoryName.getText().trim();
+
+            if (categoryName.isBlank()) {
+                throw new IllegalArgumentException("Category name cannot be empty.");
+            }
+
+            float moneySpent = Float.parseFloat(textMoneySpent.getText().trim());
+            float monthlyBudget = Float.parseFloat(textMonthlyBudget.getText().trim());
 
             monthlyBudgetEntryService.create(
                     selectedYear,
@@ -128,13 +140,13 @@ public class MainController {
                 throw new IllegalArgumentException("Please select year.");
             }
 
-            String categoryName = textCategoryName.getText();
+            String categoryName = textCategoryName.getText().trim();
 
-            if (categoryName == null || categoryName.isBlank()) {
+            if (categoryName.isBlank()) {
                 throw new IllegalArgumentException("Category name cannot be empty.");
             }
 
-            float monthlyBudget = Float.parseFloat(textMonthlyBudget.getText());
+            float monthlyBudget = Float.parseFloat(textMonthlyBudget.getText().trim());
 
             monthlyBudgetEntryService.addCategoryToAllMonths(
                     selectedYear,
@@ -155,7 +167,10 @@ public class MainController {
     @FXML
     public void onDeleteClicked(ActionEvent actionEvent) {
         MonthlyBudgetEntry selected = monthlyBudgetTableView.getSelectionModel().getSelectedItem();
-        if (selected == null) return;
+        if (selected == null) {
+            new Alert(Alert.AlertType.WARNING, "Select an entry first.", ButtonType.OK).showAndWait();
+            return;
+        }
 
         try {
             monthlyBudgetEntryService.delete(selected.getId());
@@ -166,7 +181,7 @@ public class MainController {
     }
 
     @FXML
-    public void onAddMoneySpentClicked(ActionEvent actionEvent) {
+    public void onUpdateEntryClicked(ActionEvent actionEvent) {
         MonthlyBudgetEntry selected = monthlyBudgetTableView.getSelectionModel().getSelectedItem();
 
         if (selected == null) {
@@ -175,14 +190,46 @@ public class MainController {
         }
 
         try {
-            float amount = Float.parseFloat(textAddAmount.getText());
+            if (textCategoryName.getText().trim().isBlank()
+                    && textMoneySpent.getText().trim().isBlank()
+                    && textMonthlyBudget.getText().trim().isBlank()) {
+                throw new IllegalArgumentException("Please fill at least one field to update.");
+            }
 
-            monthlyBudgetEntryService.addToMoneySpent(selected.getId(),  amount);
+            String newCategoryName;
+            float newMoneySpent;
+            float newMonthlyBudget;
+
+            if(textCategoryName.getText().trim().isBlank()){
+                newCategoryName = selected.getCategoryName();
+            } else {
+                newCategoryName = textCategoryName.getText().trim();
+            }
+
+            if(textMoneySpent.getText().trim().isBlank()){
+                newMoneySpent = selected.getMoneySpent();
+            } else {
+                newMoneySpent = Float.parseFloat(textMoneySpent.getText().trim());
+            }
+
+            if(textMonthlyBudget.getText().trim().isBlank()){
+                newMonthlyBudget = selected.getMonthlyBudget();
+            } else {
+                newMonthlyBudget = Float.parseFloat(textMonthlyBudget.getText().trim());
+            }
+
+            monthlyBudgetEntryService.update(selected.getId(),
+                    newCategoryName,
+                    newMoneySpent,
+                    newMonthlyBudget);
 
             refreshTable();
-            textAddAmount.clear();
+            textCategoryName.clear();
+            textMoneySpent.clear();
+            textMonthlyBudget.clear();
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
         }
     }
+
 }

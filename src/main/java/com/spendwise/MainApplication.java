@@ -25,14 +25,12 @@ public class MainApplication extends Application {
 
         mainController.init(servEntries);
 
-        Scene scene = new Scene(root, 405, 600);
+        Scene scene = new Scene(root, 460, 615);
         stage.setTitle("SpendWise!");
         stage.setScene(scene);
         stage.show();
     }
 
-    //TODO Drag and drop categories
-    //TODO Tidy up buttons/text fields
     //TODO Able to rename category or change budget
 
     public static void main(String[] args) {

@@ -50,18 +50,11 @@
         </VBox>
     </HBox>
 
-    <HBox>
+    <HBox spacing="10">
         <Button text="Add new entry" onAction="#onAddClicked"/>
         <Button text="Delete entry" onAction="#onDeleteClicked"/>
+        <Button text="Update entry" onAction="#onUpdateEntryClicked"/>
         <Button text="Add to all months" onAction="#onAddToAllMonths"/>
-    </HBox>
-
-    <HBox>
-        <VBox>
-            <Label text="Amount"/>
-            <TextField fx:id="textAddAmount"/>
-        </VBox>
-        <Button text="Add amount" onAction="#onAddMoneySpentClicked"/>
     </HBox>
 
 </VBox>

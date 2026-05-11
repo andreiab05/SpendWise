@@ -57,6 +57,32 @@ public class MonthlyBudgetEntryService {
         repository.update(entry);
     }
 
+    public void update(int id, String categoryName, float moneySpent, float monthlyBudget) {
+        MonthlyBudgetEntry entry = repository.read(id);
+
+        if (entry == null) {
+            throw new IllegalArgumentException("Entry not found.");
+        }
+
+        if (categoryName == null || categoryName.isBlank()) {
+            throw new IllegalArgumentException("Category name cannot be empty.");
+        }
+
+        if (moneySpent < 0) {
+            throw new IllegalArgumentException("Money spent cannot be negative.");
+        }
+
+        if (monthlyBudget < 0) {
+            throw new IllegalArgumentException("Monthly budget cannot be negative.");
+        }
+
+        entry.setCategoryName(categoryName);
+        entry.setMoneySpent(moneySpent);
+        entry.setMonthlyBudget(monthlyBudget);
+
+        repository.update(entry);
+    }
+
     public void delete(int id){
         MonthlyBudgetEntry entry = repository.read(id);
 
@@ -80,24 +106,6 @@ public class MonthlyBudgetEntryService {
                 .stream()
                 .filter(entry -> entry.getYear() == yearValue && entry.getMonth() == monthValue)
                 .toList();
-    }
-
-    public void addToMoneySpent(int entryID, float amount){
-        MonthlyBudgetEntry entry = repository.read(entryID);
-
-        if (entry == null) {
-            throw new IllegalArgumentException("Entry does not exist.");
-        }
-
-        validateEditableYear(entry.getYear());
-
-        if (amount <= 0) {
-            throw new IllegalArgumentException("Amount must be positive.");
-        }
-
-        entry.setMoneySpent(entry.getMoneySpent() + amount);
-
-        repository.update(entry);
     }
 
     public void addCategoryToAllMonths(int yearValue, String categoryName, float monthlyBudget) {
