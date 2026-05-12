@@ -9,6 +9,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 
+import java.util.Optional;
+
 public class MainController {
     @FXML TableView<MonthlyBudgetEntry> monthlyBudgetTableView;
     @FXML TableColumn<MonthlyBudgetEntry, String> categoryCol;
@@ -23,6 +25,11 @@ public class MainController {
     @FXML public TextField textCategoryName;
     @FXML public TextField textMoneySpent;
     @FXML public TextField textMonthlyBudget;
+
+    @FXML private Button addButton;
+    @FXML private Button deleteButton;
+    @FXML private Button updateButton;
+    @FXML private Button addToAllMonthsButton;
 
     public void init(MonthlyBudgetEntryService entriesService) {
         this.monthlyBudgetEntryService = entriesService;
@@ -71,13 +78,27 @@ public class MainController {
         );
         monthComboBox.getItems().setAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
-        yearComboBox.setOnAction(e -> refreshTable());
+        monthlyBudgetTableView.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, selectedEntry) -> {
+                    if (selectedEntry != null) {
+                        textCategoryName.setText(selectedEntry.getCategoryName());
+                        textMoneySpent.setText(String.valueOf(selectedEntry.getMoneySpent()));
+                        textMonthlyBudget.setText(String.valueOf(selectedEntry.getMonthlyBudget()));
+                    }
+                }
+        );
+
+        yearComboBox.setOnAction(e -> {
+            refreshTable();
+            updateButtonsForSelectedYear();
+        });
         monthComboBox.setOnAction(e -> refreshTable());
 
         yearComboBox.setValue(java.time.Year.now().getValue());
         monthComboBox.setValue(java.time.LocalDate.now().getMonthValue());
 
         refreshTable();
+        updateButtonsForSelectedYear();
     }
 
     private void refreshTable() {
@@ -91,6 +112,22 @@ public class MainController {
         entries.setAll(
                 monthlyBudgetEntryService.getEntriesForMonth(selectedYear, selectedMonth)
         );
+    }
+
+    private void updateButtonsForSelectedYear() {
+        Integer selectedYear = yearComboBox.getValue();
+        int currentYear = java.time.Year.now().getValue();
+
+        boolean isPastYear = selectedYear == null || selectedYear < currentYear;
+
+        addButton.setDisable(isPastYear);
+        deleteButton.setDisable(isPastYear);
+        updateButton.setDisable(isPastYear);
+        addToAllMonthsButton.setDisable(isPastYear);
+
+        textCategoryName.setDisable(isPastYear);
+        textMoneySpent.setDisable(isPastYear);
+        textMonthlyBudget.setDisable(isPastYear);
     }
 
     @FXML
@@ -167,14 +204,27 @@ public class MainController {
     @FXML
     public void onDeleteClicked(ActionEvent actionEvent) {
         MonthlyBudgetEntry selected = monthlyBudgetTableView.getSelectionModel().getSelectedItem();
+
         if (selected == null) {
             new Alert(Alert.AlertType.WARNING, "Select an entry first.", ButtonType.OK).showAndWait();
             return;
         }
 
         try {
+            Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+            alert.setTitle("Delete");
+            alert.setHeaderText("This action cannot be undone");
+            alert.setContentText("Do you want to continue?");
+
+            Optional<ButtonType> option = alert.showAndWait();
+
+            if (option.isEmpty() || option.get() != ButtonType.OK) {
+                return;
+            }
+
             monthlyBudgetEntryService.delete(selected.getId());
             refreshTable();
+
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage(), ButtonType.OK).showAndWait();
         }

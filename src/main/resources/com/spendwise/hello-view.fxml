@@ -51,10 +51,10 @@
     </HBox>
 
     <HBox spacing="10">
-        <Button text="Add new entry" onAction="#onAddClicked"/>
-        <Button text="Delete entry" onAction="#onDeleteClicked"/>
-        <Button text="Update entry" onAction="#onUpdateEntryClicked"/>
-        <Button text="Add to all months" onAction="#onAddToAllMonths"/>
+        <Button fx:id="addButton" text="Add new entry" onAction="#onAddClicked"/>
+        <Button fx:id="deleteButton" text="Delete entry" onAction="#onDeleteClicked"/>
+        <Button fx:id="updateButton" text="Update entry" onAction="#onUpdateEntryClicked"/>
+        <Button fx:id="addToAllMonthsButton" text="Add to all months" onAction="#onAddToAllMonths"/>
     </HBox>
 
 </VBox>

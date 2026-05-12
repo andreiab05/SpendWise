@@ -31,7 +31,11 @@ public class MainApplication extends Application {
         stage.show();
     }
 
-    //TODO Able to rename category or change budget
+    //TODO Clear input validation + duplicate
+    //TODO Make some sort of graphs, like a pie chart for example
+    //TODO Make the GUI look better aesthetically
+    //TODO Report per months
+    //TODO Export as CSV
 
     public static void main(String[] args) {
         launch(args);
