@@ -1,6 +1,7 @@
 package com.spendwise.repository;
 
 import com.spendwise.domain.MonthlyBudgetEntry;
+import com.spendwise.exception.RepositoryException;
 import org.sqlite.SQLiteDataSource;
 import java.sql.*;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
                 connection = ds.getConnection();
             }
         } catch (SQLException e) {
-            throw new RuntimeException("An error came up while trying to connect to the data base", e);
+            throw new RepositoryException("An error came up while trying to connect to the database", e);
         }
     }
 
@@ -43,7 +44,7 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
                 statement.executeUpdate(sql);
             }
         } catch (SQLException e) {
-            System.err.println("[ERROR] createSchema : " + e.getMessage());
+            throw new RepositoryException("An error came up while trying to create the database schema.", e);
         }
     }
 
@@ -65,7 +66,7 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
             }
             
         } catch(SQLException e){
-            throw new RuntimeException("Error at saving the entry: " + entry, e);
+            throw new RepositoryException("Error at saving the entry. This category may already exist for the selected month.", e);
         }
     }
 
@@ -90,7 +91,7 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
                 return null;
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Error at reading id=" + id, e);
+            throw new RepositoryException("Error at reading entry with ID: " + id, e);
         }
     }
 
@@ -107,9 +108,13 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
             statement.setFloat(5, entry.getMonthlyBudget());
             statement.setInt(6, entry.getId());
 
-            statement.executeUpdate();
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new RepositoryException("Entry does not exist.");
+            }
         } catch(SQLException e){
-            throw new RuntimeException("Error at updating the entry: " + entry, e);
+            throw new RepositoryException("Error at updating the entry: " + entry, e);
         }
     }
 
@@ -119,9 +124,14 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
 
         try (PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setInt(1, id);
-            statement.executeUpdate();
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new RepositoryException("Entry does not exist.");
+            }
         } catch(SQLException e){
-            throw new RuntimeException("Error at deleting entry with ID: " + id, e);
+            throw new RepositoryException("Error at deleting entry with ID: " + id, e);
         }
     }
 
@@ -147,7 +157,7 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Error method getAll()", e);
+            throw new RepositoryException("Error method getAll()", e);
         }
 
         return result;
@@ -159,7 +169,7 @@ public class SQLiteMonthlyBudgetEntryRepository implements InterfaceRepository<M
             try{
                 connection.close();
             } catch (SQLException e){
-                throw new RuntimeException(e);
+                throw new RepositoryException("Error while trying to close the database connection.",e);
             }
         }
     }

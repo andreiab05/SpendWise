@@ -1,6 +1,7 @@
 package com.spendwise.repository;
 
 import com.spendwise.domain.Entity;
+import com.spendwise.exception.RepositoryException;
 
 import java.util.*;
 
@@ -9,8 +10,8 @@ public class InMemoryRepository<T extends Entity> implements InterfaceRepository
 
     @Override
     public void create(T entity){
-        if (read(entity.getId()) != null) {
-            throw new RuntimeException("Entity already exists");
+        if (data.containsKey(entity.getId())) {
+            throw new RepositoryException("Entity already exists");
         }
         data.put(entity.getId(), entity);
     }
@@ -22,17 +23,19 @@ public class InMemoryRepository<T extends Entity> implements InterfaceRepository
 
     @Override
     public void update(T entity){
-        for (int i = 0; i < data.size(); i++) {
-            if (data.get(i).getId() == entity.getId()) {
-                data.put(entity.getId(), entity);
-                return;
-            }
+        if(!data.containsKey(entity.getId())) {
+            throw new RepositoryException("Entity does not exist");
         }
-        throw new RuntimeException("Entity does not exist");
+
+        data.put(entity.getId(), entity);
     }
 
     @Override
     public void delete(int id){
+        if(!data.containsKey(id)) {
+            throw new RepositoryException("Entity does not exist");
+        }
+
         data.remove(id);
     }
 
