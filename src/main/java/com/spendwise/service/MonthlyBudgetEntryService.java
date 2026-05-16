@@ -1,6 +1,7 @@
 package com.spendwise.service;
 
 import com.spendwise.domain.MonthlyBudgetEntry;
+import com.spendwise.exception.ValidationException;
 import com.spendwise.repository.InterfaceRepository;
 import java.time.Year;
 import java.util.List;
@@ -12,25 +13,55 @@ public class MonthlyBudgetEntryService {
         this.repository = repository;
     }
 
-    private void validateEditableYear(int year) {
+    private void validateEditableYear(int yearValue) {
         int currentYear = Year.now().getValue();
 
-        if (year < currentYear) {
-            throw new IllegalArgumentException("Past years are read-only.");
+        validateYear(yearValue);
+
+        if (yearValue < currentYear) {
+            throw new ValidationException("Past years are read-only.");
+        }
+    }
+
+    private void validateYear(int year) {
+        if (year <= 0) {
+            throw new ValidationException("Year must be positive.");
         }
     }
 
     private void validateMonth(int month) {
         if (month < 1 || month > 12) {
-            throw new IllegalArgumentException("Month must be between 1 and 12.");
+            throw new ValidationException("Month must be between 1 and 12.");
+        }
+    }
+
+    private void validateCategoryName(String categoryName) {
+        if (categoryName == null || categoryName.trim().isBlank()) {
+            throw new ValidationException("Category name cannot be empty.");
+        }
+    }
+
+    private void validateAmount(Float amount, String fieldName){
+        if (amount == null){
+            throw new ValidationException(fieldName + " is required.");
+        }
+        if (amount < 0){
+            throw new ValidationException(fieldName + " cannot be negative.");
         }
     }
 
     public void create(int yearValue, int monthValue, String categoryName, Float moneySpent, Float monthlyBudget) {
         validateEditableYear(yearValue);
         validateMonth(monthValue);
+        validateCategoryName(categoryName);
+        validateAmount(moneySpent, "Money spent");
+        validateAmount(monthlyBudget, "Monthly budget");
 
-        MonthlyBudgetEntry entry = new MonthlyBudgetEntry(yearValue, monthValue, categoryName, moneySpent, monthlyBudget);
+        MonthlyBudgetEntry entry = new MonthlyBudgetEntry(yearValue,
+                monthValue,
+                categoryName.trim(),
+                moneySpent,
+                monthlyBudget);
         repository.create(entry);
     }
 
@@ -38,45 +69,19 @@ public class MonthlyBudgetEntryService {
         return repository.read(id);
     }
 
-    public void update(int id, int yearValue, int monthValue, String categoryName, Float moneySpent, Float monthlyBudget) {
-        validateEditableYear(yearValue);
-        validateMonth(monthValue);
-
-        if(repository.read(id) == null){
-            throw new IllegalArgumentException("Entry does not exist.");
-        }
-        MonthlyBudgetEntry entry = new MonthlyBudgetEntry(
-                id,
-                yearValue,
-                monthValue,
-                categoryName,
-                moneySpent,
-                monthlyBudget
-        );
-
-        repository.update(entry);
-    }
-
     public void update(int id, String categoryName, float moneySpent, float monthlyBudget) {
         MonthlyBudgetEntry entry = repository.read(id);
 
         if (entry == null) {
-            throw new IllegalArgumentException("Entry not found.");
+            throw new ValidationException("Entry not found.");
         }
 
-        if (categoryName == null || categoryName.isBlank()) {
-            throw new IllegalArgumentException("Category name cannot be empty.");
-        }
+        validateEditableYear(entry.getYear());
+        validateCategoryName(categoryName);
+        validateAmount(moneySpent, "Money spent");
+        validateAmount(monthlyBudget, "Monthly budget");
 
-        if (moneySpent < 0) {
-            throw new IllegalArgumentException("Money spent cannot be negative.");
-        }
-
-        if (monthlyBudget < 0) {
-            throw new IllegalArgumentException("Monthly budget cannot be negative.");
-        }
-
-        entry.setCategoryName(categoryName);
+        entry.setCategoryName(categoryName.trim());
         entry.setMoneySpent(moneySpent);
         entry.setMonthlyBudget(monthlyBudget);
 
@@ -87,7 +92,7 @@ public class MonthlyBudgetEntryService {
         MonthlyBudgetEntry entry = repository.read(id);
 
         if (entry == null) {
-            throw new IllegalArgumentException("Entry does not exist.");
+            throw new ValidationException("Entry does not exist.");
         }
 
         validateEditableYear(entry.getYear());
@@ -100,6 +105,7 @@ public class MonthlyBudgetEntryService {
     }
 
     public List<MonthlyBudgetEntry> getEntriesForMonth(int yearValue, int monthValue){
+        validateYear(yearValue);
         validateMonth(monthValue);
 
         return repository.getAll()
@@ -110,25 +116,33 @@ public class MonthlyBudgetEntryService {
 
     public void addCategoryToAllMonths(int yearValue, String categoryName, float monthlyBudget) {
         validateEditableYear(yearValue);
+        validateCategoryName(categoryName);
+        validateAmount(monthlyBudget, "Monthly budget");
 
-        if (categoryName == null || categoryName.isBlank()) {
-            throw new IllegalArgumentException("Category name cannot be empty.");
-        }
-
-        if (monthlyBudget < 0) {
-            throw new IllegalArgumentException("Monthly budget cannot be negative.");
-        }
+        String trimmedCategoryName = categoryName.trim();
+        List<MonthlyBudgetEntry> allEntries = repository.getAll();
 
         for (int month = 1; month <= 12; month++) {
-            MonthlyBudgetEntry entry = new MonthlyBudgetEntry(
-                    yearValue,
-                    month,
-                    categoryName,
-                    0f,
-                    monthlyBudget
-            );
+            int currentMonth = month;
 
-            repository.create(entry);
+            boolean exists = allEntries.stream()
+                    .anyMatch(entry ->
+                            entry.getYear() == yearValue &&
+                            entry.getMonth() == currentMonth &&
+                            entry.getCategoryName().equalsIgnoreCase(trimmedCategoryName)
+                    );
+
+            if (!exists) {
+                MonthlyBudgetEntry entry = new MonthlyBudgetEntry(
+                        yearValue,
+                        currentMonth,
+                        trimmedCategoryName,
+                        0f,
+                        monthlyBudget
+                );
+
+                repository.create(entry);
+            }
         }
     }
 }

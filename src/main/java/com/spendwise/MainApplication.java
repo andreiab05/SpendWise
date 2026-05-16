@@ -32,6 +32,8 @@ public class MainApplication extends Application {
     }
 
     //TODO Clear input validation + duplicate
+    //TODO package for validators
+    //TODO solve warnings and eliminate useless code
     //TODO Make some sort of graphs, like a pie chart for example
     //TODO Make the GUI look better aesthetically
     //TODO Report per months
