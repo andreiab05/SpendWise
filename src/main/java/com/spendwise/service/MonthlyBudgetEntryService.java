@@ -51,10 +51,14 @@ public class MonthlyBudgetEntryService {
     }
 
     public void create(int yearValue, int monthValue, String categoryName, Float moneySpent, Float monthlyBudget) {
+
+        if(moneySpent == null){
+            moneySpent = 0f;
+        }
+
         validateEditableYear(yearValue);
         validateMonth(monthValue);
         validateCategoryName(categoryName);
-        validateAmount(moneySpent, "Money spent");
         validateAmount(monthlyBudget, "Monthly budget");
 
         MonthlyBudgetEntry entry = new MonthlyBudgetEntry(yearValue,
@@ -69,7 +73,7 @@ public class MonthlyBudgetEntryService {
         return repository.read(id);
     }
 
-    public void update(int id, String categoryName, float moneySpent, float monthlyBudget) {
+    public void update(int id, String categoryName, Float moneySpent, Float monthlyBudget) {
         MonthlyBudgetEntry entry = repository.read(id);
 
         if (entry == null) {
@@ -114,7 +118,7 @@ public class MonthlyBudgetEntryService {
                 .toList();
     }
 
-    public void addCategoryToAllMonths(int yearValue, String categoryName, float monthlyBudget) {
+    public void addCategoryToAllMonths(int yearValue, String categoryName, Float monthlyBudget) {
         validateEditableYear(yearValue);
         validateCategoryName(categoryName);
         validateAmount(monthlyBudget, "Monthly budget");

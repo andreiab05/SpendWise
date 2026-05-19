@@ -24,12 +24,12 @@
     </TableView>
 
     <HBox>
-        <Label fx:id="selectedYearLabel" text="Select an year." />
+        <Label text="Select an year." />
         <ComboBox fx:id="yearComboBox" />
     </HBox>
 
     <HBox>
-        <Label fx:id="selectedMonthLabel" text="Select a month." />
+        <Label text="Select a month." />
         <ComboBox fx:id="monthComboBox" />
     </HBox>
 

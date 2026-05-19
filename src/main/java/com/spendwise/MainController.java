@@ -39,7 +39,7 @@ public class MainController {
 
         categoryCol.setCellValueFactory(new PropertyValueFactory<>("categoryName"));
         spentCol.setCellValueFactory(new PropertyValueFactory<>("moneySpent"));
-        spentCol.setCellFactory(column -> new TableCell<MonthlyBudgetEntry, Float>() {
+        spentCol.setCellFactory(_ -> new TableCell<>() {
             @Override
             protected void updateItem(Float moneySpent, boolean empty) {
                 super.updateItem(moneySpent, empty);
@@ -79,7 +79,7 @@ public class MainController {
         monthComboBox.getItems().setAll(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
         monthlyBudgetTableView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, selectedEntry) -> {
+                (_, _, selectedEntry) -> {
                     if (selectedEntry != null) {
                         textCategoryName.setText(selectedEntry.getCategoryName());
                         textMoneySpent.setText(String.valueOf(selectedEntry.getMoneySpent()));
@@ -146,8 +146,16 @@ public class MainController {
                 throw new IllegalArgumentException("Category name cannot be empty.");
             }
 
-            float moneySpent = Float.parseFloat(textMoneySpent.getText().trim());
-            float monthlyBudget = Float.parseFloat(textMonthlyBudget.getText().trim());
+            Float monthlyBudget = Float.parseFloat(textMonthlyBudget.getText().trim());
+
+            String spentText = textMoneySpent.getText();
+            Float moneySpent;
+
+            if (spentText == null || spentText.isBlank()) {
+                moneySpent = 0f;
+            } else {
+                moneySpent = Float.parseFloat(spentText);
+            }
 
             monthlyBudgetEntryService.create(
                     selectedYear,
